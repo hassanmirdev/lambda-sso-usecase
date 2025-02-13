@@ -21,10 +21,10 @@ jobs:
     - name: Set up AWS credentials via OIDC
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::677276078111:role/GitHubActionsDeployRole
+        role-to-assume: arn:aws:iam::677276078111:role/GitHubActionsDeployRole  # Ensure this matches the role ARN
         role-session-name: github-actions-session
         aws-region: us-east-1
-
+        audience: sts.amazonaws.com
     - name: Terraform Init
       run: terraform init
 
