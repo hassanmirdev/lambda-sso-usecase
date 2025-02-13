@@ -18,12 +18,15 @@ jobs:
       with:
         terraform_version: 1.4.0
 
+    - name: Set up AWS credentials via OIDC
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::677276078111:role/GitHubActionsDeployRole
+        role-session-name: github-actions-session
+        aws-region: us-east-1
+
     - name: Terraform Init
       run: terraform init
 
     - name: Terraform Apply
       run: terraform apply -auto-approve
-      env:
-        AWS_REGION: us-east-1
-        AWS_ROLE_ARN: arn:aws:iam::677276078111:role/GitHubActionsDeployRole  # ARN of the role
-        AWS_WEB_IDENTITY_TOKEN_FILE: ${{ github.event.head_commit.id }}  # GitHub OIDC Token
