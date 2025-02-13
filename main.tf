@@ -19,7 +19,7 @@ resource "aws_lambda_function" "hello_world_lambda" {
   function_name = "HelloWorldLambda"
   role          = aws_iam_role.lambda_role.arn
   handler       = "index.handler"
-  runtime       = "Node.js 18.x"
+  runtime       = "Nodejs18.x"
   filename      = "function.zip"
 }
 
