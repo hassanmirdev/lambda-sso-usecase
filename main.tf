@@ -118,12 +118,23 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   depends_on = [aws_api_gateway_integration.lambda_integration]
 }
 
-# 10. Cognito Authorizer for API Gateway
+/* # 10. Cognito Authorizer for API Gateway
 resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   name                 = "CognitoAuthorizer"
   rest_api_id          = aws_api_gateway_rest_api.api.id
   authorizer_uri       = "arn:aws:cognito-idp:${var.aws_region}:${data.aws_caller_identity.current.account_id}:userpool/${aws_cognito_user_pool.user_pool.id}"
   identity_source      = "method.request.header.Authorization"
+  authorizer_type      = "COGNITO_USER_POOLS"
+}
+
+*/
+
+# 10. Cognito Authorizer for API Gateway
+resource "aws_api_gateway_authorizer" "cognito_authorizer" {
+  name                 = "CognitoAuthorizer"
+  rest_api_id          = aws_api_gateway_rest_api.api.id
+  identity_source      = "method.request.header.Authorization"
+  provider_arns        = [aws_cognito_user_pool.user_pool.arn]
   authorizer_type      = "COGNITO_USER_POOLS"
 }
 # Create API Gateway deployment
