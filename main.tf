@@ -135,7 +135,7 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   rest_api_id          = aws_api_gateway_rest_api.api.id
   identity_source      = "method.request.header.Authorization"
   provider_arns        = [aws_cognito_user_pool.user_pool.arn]
-  authorizer_type      = "COGNITO_USER_POOLS"
+  # authorizer_type      = "COGNITO_USER_POOLS"
 }
 # Create API Gateway deployment
 resource "aws_api_gateway_deployment" "my_api_deployment" {
