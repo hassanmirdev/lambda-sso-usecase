@@ -81,6 +81,9 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
+
+  # Ensure this resource depends on the integration being created first
+  depends_on = [aws_api_gateway_integration.lambda_integration]
 }
 
 # Deploy API to a dev stage
