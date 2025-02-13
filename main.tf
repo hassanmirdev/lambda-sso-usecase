@@ -140,8 +140,19 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   identity_source = "method.request.header.Authorization"
   provider_arns   = [aws_cognito_user_pool.user_pool.arn]
   type            = "COGNITO_USER_POOLS"  # This can be omitted as it defaults to COGNITO_USER_POOLS
+  
 }
-
+resource "aws_apigatewayv2_authorizer" "cognito_auth" {
+  api_id          = aws_api_gateway_rest_api.api.id
+  name            = "CognitoAuth"
+  authorizer_type = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+ 
+  jwt_configuration {
+    audience = [aws_cognito_user_pool_client.client.id]
+    issuer   = "https://cognito-idp.us-east-1.amazonaws.com/${aws_cognito_user_pool.pool.id}"
+  }
+}
 
 # Create API Gateway deployment
 resource "aws_api_gateway_deployment" "my_api_deployment" {
