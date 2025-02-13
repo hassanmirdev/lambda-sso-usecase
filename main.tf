@@ -29,7 +29,6 @@ resource "aws_lambda_function" "hello_world_lambda" {
 resource "aws_cognito_user_pool" "user_pool" {
   name = "HelloWorldUserPool"
   
-  // Optional: Define password policy and multi-factor authentication if needed
   password_policy {
     minimum_length = 8
     require_uppercase = true
@@ -38,7 +37,6 @@ resource "aws_cognito_user_pool" "user_pool" {
   }
 
   auto_verified_attributes = ["email"]
-
   mfa_configuration = "OFF"
 }
 
@@ -68,7 +66,6 @@ resource "aws_api_gateway_method" "get_method" {
   http_method   = "GET"
   authorization = "COGNITO_USER_POOLS"
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
-
 }
 
 # Integrate the GET method with the Lambda function
@@ -118,32 +115,21 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   depends_on = [aws_api_gateway_integration.lambda_integration]
 }
 
-/* # 10. Cognito Authorizer for API Gateway
-resource "aws_api_gateway_authorizer" "cognito_authorizer" {
-  name                 = "CognitoAuthorizer"
-  rest_api_id          = aws_api_gateway_rest_api.api.id
-  authorizer_uri       = "arn:aws:cognito-idp:${var.aws_region}:${data.aws_caller_identity.current.account_id}:userpool/${aws_cognito_user_pool.user_pool.id}"
-  identity_source      = "method.request.header.Authorization"
-  authorizer_type      = "COGNITO_USER_POOLS"
-}
-
-*/
-
 # 10. Cognito Authorizer for API Gateway
 resource "aws_api_gateway_authorizer" "cognito_authorizer" {
-  name                 = "CognitoAuthorizer"
-  rest_api_id          = aws_api_gateway_rest_api.api.id
-  identity_source      = "method.request.header.Authorization"
-  provider_arns        = [aws_cognito_user_pool.user_pool.arn]
-  # authorizer_type      = "COGNITO_USER_POOLS"
+  name            = "CognitoAuthorizer"
+  rest_api_id     = aws_api_gateway_rest_api.api.id
+  identity_source = "method.request.header.Authorization"
+  provider_arns   = [aws_cognito_user_pool.user_pool.arn]
+  type            = "COGNITO_USER_POOLS"  # This can be omitted as it defaults to COGNITO_USER_POOLS
 }
+
 # Create API Gateway deployment
 resource "aws_api_gateway_deployment" "my_api_deployment" {
   depends_on = [
     aws_api_gateway_integration.lambda_integration,
     aws_api_gateway_method.get_method
   ]
-
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
 
