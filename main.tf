@@ -70,6 +70,10 @@ resource "aws_api_gateway_method_response" "method_response" {
   resource_id = aws_api_gateway_resource.hello_world_resource.id
   http_method = aws_api_gateway_method.get_method.http_method
   status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
 }
 
 resource "aws_api_gateway_integration_response" "integration_response" {
