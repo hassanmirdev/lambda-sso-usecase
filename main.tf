@@ -28,21 +28,18 @@ resource "aws_lambda_function" "hello_world_lambda" {
 # 3. Cognito User Pool (for SSO)
 resource "aws_cognito_user_pool" "user_pool" {
   name = "HelloWorldUserPool"
-
-  schema {
-    attribute {
-      name = "email"
-      required = true
-      mutable = true
-      attribute_data_type = "String"
-    }
-    attribute {
-      name = "username"
-      required = true
-      mutable = false
-      attribute_data_type = "String"
-    }
+  
+  // Optional: Define password policy and multi-factor authentication if needed
+  password_policy {
+    minimum_length = 8
+    require_uppercase = true
+    require_numbers = true
+    require_symbols = true
   }
+
+  auto_verified_attributes = ["email"]
+
+  mfa_configuration = "OFF"
 }
 
 resource "aws_cognito_user_pool_client" "app_client" {
