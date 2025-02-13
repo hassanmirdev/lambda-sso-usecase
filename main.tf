@@ -63,7 +63,6 @@ resource "aws_cognito_user_pool_client" "app_client" {
   prevent_user_existence_errors        = "ENABLED"
 }
 
-}
 
 # API Gateway Rest API
 resource "aws_api_gateway_rest_api" "api" {
