@@ -42,8 +42,8 @@ resource "aws_cognito_user_pool" "user_pool" {
 
 resource "aws_cognito_user" "test_user" {
   user_pool_id = aws_cognito_user_pool.user_pool.id
-  username     =  test-user
-  password     = Ibbu.1049@
+  username     =  "test-user"
+  password     = "Ibbu.1049@"
 }
 
 # resource "aws_cognito_user_pool_client" "app_client" {
