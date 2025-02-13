@@ -55,7 +55,7 @@ resource "aws_cognito_user" "test_user" {
 resource "aws_cognito_user_pool_client" "app_client" {
   name                     = "HelloWorldAppClient"
   user_pool_id             = aws_cognito_user_pool.user_pool.id
-  generate_secret          = true
+  generate_secret          = false
   callback_urls            = ["https://k7cjb5aqdc.execute-api.us-east-1.amazonaws.com/dev/hello"]  # Your API endpoint for handling the callback
   allowed_oauth_flows      = ["code", "implicit"] # Use the authorization code grant flow for OAuth
   allowed_oauth_scopes     = ["openid", "email", "profile"]  # OpenID scope and others if needed
