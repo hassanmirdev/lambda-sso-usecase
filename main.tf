@@ -40,13 +40,10 @@ resource "aws_cognito_user_pool" "user_pool" {
   mfa_configuration = "OFF"
 }
 
-resource "aws_cognito_user" "example_user" {
-  username   = "testuser"  # Define the username for the user
-  user_pool_id = aws_cognito_user_pool.user_pool.id  # Reference to the Cognito User Pool
-  attributes = {
-    email = "testuser@example.com"  # Add any required attributes for the user
-  }
-  desired_delivery_mediums = ["EMAIL"]  # Email delivery of the temporary password
+resource "aws_cognito_user" "test_user" {
+  user_pool_id = aws_cognito_user_pool.user_pool.id
+  username     = var.username
+  password     = var.password
 }
 
 # resource "aws_cognito_user_pool_client" "app_client" {
@@ -145,6 +142,7 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   provider_arns   = [aws_cognito_user_pool.user_pool.arn]
   type            = "COGNITO_USER_POOLS"  # This can be omitted as it defaults to COGNITO_USER_POOLS
 }
+
 
 # Create API Gateway deployment
 resource "aws_api_gateway_deployment" "my_api_deployment" {
