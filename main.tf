@@ -25,6 +25,32 @@ resource "aws_lambda_function" "hello_world_lambda" {
   filename      = "function.zip"
 }
 
+# 3. Cognito User Pool (for SSO)
+resource "aws_cognito_user_pool" "user_pool" {
+  name = "HelloWorldUserPool"
+
+  schema {
+    attribute {
+      name = "email"
+      required = true
+      mutable = true
+      attribute_data_type = "String"
+    }
+    attribute {
+      name = "username"
+      required = true
+      mutable = false
+      attribute_data_type = "String"
+    }
+  }
+}
+
+resource "aws_cognito_user_pool_client" "app_client" {
+  name           = "HelloWorldAppClient"
+  user_pool_id   = aws_cognito_user_pool.user_pool.id
+  generate_secret = false
+}
+
 # API Gateway Rest API
 resource "aws_api_gateway_rest_api" "api" {
   name        = "HelloWorldAPI"
@@ -43,7 +69,9 @@ resource "aws_api_gateway_method" "get_method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.hello_world_resource.id
   http_method   = "GET"
-  authorization = "NONE"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
+
 }
 
 # Integrate the GET method with the Lambda function
@@ -93,6 +121,14 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   depends_on = [aws_api_gateway_integration.lambda_integration]
 }
 
+# 10. Cognito Authorizer for API Gateway
+resource "aws_api_gateway_authorizer" "cognito_authorizer" {
+  name                 = "CognitoAuthorizer"
+  rest_api_id          = aws_api_gateway_rest_api.api.id
+  authorizer_uri       = "arn:aws:cognito-idp:${var.aws_region}:${data.aws_caller_identity.current.account_id}:userpool/${aws_cognito_user_pool.user_pool.id}"
+  identity_source      = "method.request.header.Authorization"
+  authorizer_type      = "COGNITO_USER_POOLS"
+}
 # Create API Gateway deployment
 resource "aws_api_gateway_deployment" "my_api_deployment" {
   depends_on = [
